@@ -1,0 +1,10 @@
+version: '3.4'
+services:
+
+  tutorials:
+    image: betolink/itslive-explorer
+    container_name: itslive-explorer
+    ports:
+      - 8888:8888
+    volumes:
+      - ./notebooks:/home/jovyan/work
