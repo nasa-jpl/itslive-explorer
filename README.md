@@ -32,13 +32,13 @@ The Binder button above allows you to explore and run the notebook in a shared c
 4. From the terminal window, launch the docker container using the following command, replacing [path/notebook_folder] with your path and notebook folder name:
 
 ```bash
-docker run --name tutorials -p 8888:8888 -v [path/notebook_folder]:/home/jovyan/work betolink/itslive-explorer
+docker run --name itslive -p 8888:8888 -v [path/notebook_folder]:/home/jovyan/work betolink/itslive-explorer
 ```
 
 Example:
 
 ```bash
-docker run --name tutorials -p 8888:8888 -v /Users/name/Desktop/itslive-explorer:/home/jovyan/work betolink/itslive-explorer
+docker run --name itslive -p 8888:8888 -v /Users/name/Desktop/itslive-explorer:/home/jovyan/work betolink/itslive-explorer
 ```
 
 Or, with docker-compose:
@@ -50,7 +50,7 @@ docker-compose up
 If you want to mount a directory with write permissions, you need to grant the container the same permissions as the one on the directory to be mounted and tell it that has "root" access (within the container). This is important if you want to persist your work or download data to a local directory and not just the docker container. Run the example command below for this option:
 
 ```bash
-docker run --name tutorials -e NB_UID=$(id -u) --user root -p 8888:8888 -v  /Users/name/Desktop/itslive-explorer:/home/jovyan/work betolink/itslive-explorer
+docker run --name itslive -e NB_UID=$(id -u) --user root -p 8888:8888 -v  /Users/name/Desktop/itslive-explorer:/home/jovyan/work betolink/itslive-explorer
 ```
 
 The initialization will take some time and will require 2.6 GB of space. Once the startup is complete you will see a line of output similar to this:
@@ -63,7 +63,7 @@ To access the notebook, open this file in a browser:
      or http://127.0.0.1:8888/?token=f002a50e25b6f623aa775312737ba8a23ffccfd4458faa6f
 ```
 
-If you started your container with the `-d`/`--detach` option, check `docker logs tutorials` for this output.
+If you started your container with the `-d`/`--detach` option, check `docker logs itslive` for this output.
 
 5. Open up a web browser and copy one of the URLs as instructed above.
 
@@ -81,13 +81,13 @@ If you started your container with the `-d`/`--detach` option, check `docker log
 5. From the terminal window, launch the docker container using the following command, replacing [path\notebook_folder] with your path and notebook folder name:
 
 ```bash
-docker run --name tutorials -p 8888:8888 -v [path\notebook_folder]:/home/jovyan/work betolink/itslive-explorer
+docker run --name itslive -p 8888:8888 -v [path\notebook_folder]:/home/jovyan/work betolink/itslive-explorer
 ```
 
 Example:
 
 ```bash
-docker run --name tutorials -p 8888:8888 -v C:\notebook_folder:/home/jovyan/work betolink/itslive-explorer
+docker run --name itslive -p 8888:8888 -v C:\notebook_folder:/home/jovyan/work betolink/itslive-explorer
 ```
 
 Or, with docker-compose:
@@ -99,7 +99,7 @@ docker-compose up
 If you want to mount a directory with write permissions you need to grant the container the same permissions as the one on the directory to be mounted and tell it that has "root" access (within the container)
 
 ```bash
-docker run --name tutorials --user root -p 8888:8888 -v C:\notebook_folder:/home/jovyan/work betolink/itslive-explorer
+docker run --name itslive --user root -p 8888:8888 -v C:\notebook_folder:/home/jovyan/work betolink/itslive-explorer
 ```
 
 The initialization will take some time and will require 2.6 GB of space. Once the startup is complete you will see a line of output similar to this:
@@ -111,7 +111,7 @@ To access the notebook, open this file in a browser:
         http://(6a8bfa6a8518 or 127.0.0.1):8888/?token=2d72e03269b59636d9e31937fcb324f5bdfd0c645a6eba3f
 ```
 
-If you started your container with the `-d`/`--detach` option, check `docker logs tutorials` for this output.
+If you started your container with the `-d`/`--detach` option, check `docker logs itslive` for this output.
 
 6. Follow the instructions and copy one of the URLs into a web browser and hit return. The address should look something like this:
 
@@ -132,7 +132,7 @@ Unzip the file, and open a command line or terminal window in the itslive-explor
 From a command line or terminal window, install the required environment with the following commands:
 
 ```bash
-conda env create -f binder/environment.yml && conda activate tutorials
+conda env create -f binder/environment.yml && conda activate itslive-explorer
 ./binder/postBuild
 ```
 
@@ -147,7 +147,7 @@ conda env update -f binder/environment.yml
 Activate the environment with
 
 ```
-conda activate tutorials
+conda activate itslive-explorer
 ```
 
 Launch the notebook locally with the following command:
@@ -158,7 +158,7 @@ jupyter lab
 
 This should open a browser window with the JupyterLab IDE, showing your current working directory on the left-hand navigation. Navigate to the tutorial folder of choice and click on their associated *.ipynb files to get started.
 
-> **NOTE:** Sometimes Conda environments change (break) even with pinned down dependencies. If you run into an issue with dependencies for the tutorials please open an issue and we'll try to fix it as soon as possible.
+> **NOTE:** Sometimes Conda environments change (break) even with pinned down dependencies. If you run into an issue with dependencies for the itslive-explorer please open an issue and we'll try to fix it as soon as possible.
 
 
 ## Credit
