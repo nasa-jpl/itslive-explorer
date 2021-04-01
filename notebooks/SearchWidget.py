@@ -1,6 +1,8 @@
 import calendar
+import json
 import os
 from datetime import datetime
+from uuid import uuid4
 
 import ipywidgets as widgets
 import pandas as pd
@@ -14,7 +16,7 @@ from shapely.geometry import box
 from sidecar import Sidecar
 
 
-class ItsliveSearchWidget():
+class map():
     """
     Widget to access ITS_LIVE image pairs.
     """
@@ -38,6 +40,7 @@ class ItsliveSearchWidget():
             'hemisphere': hemisphere,
             'orientation': orientation,
             'max_granules_per_year': 1000,
+            'project_name': 'default',
             'selected_months': []
         }
         self.granules_coverage = None
@@ -169,6 +172,16 @@ class ItsliveSearchWidget():
         )
         self._control_filters.set_title(0, 'Filters')
 
+        self._control_download_project_name = widgets.Text(
+            placeholder='e.g. pine-glacier-1990-2000',
+            value=str(self.properties['project_name']),
+            description='Project name: ',
+            disabled=False,
+            style={'max_width': '40px',
+                   'display': 'flex-start',
+                   'description_width': 'initial'}
+        )
+
         self._control_api_search = widgets.Accordion(children=[
             widgets.VBox([
                 self._control_projection,
@@ -180,10 +193,14 @@ class ItsliveSearchWidget():
         self._control_api_search.set_title(0, 'Velocity-Pair Search Criteria')
 
         self._control_download_group = widgets.Accordion(
-            children=[
-                      widgets.VBox([self._control_download_button,
-                      self._control_selected_granules])],
-                      selected_index=None
+            children=[widgets.HBox([
+                        widgets.VBox([
+                            self._control_download_button,
+                            self._control_selected_granules]
+                        ),
+                        self._control_download_project_name])],
+            selected_index=None
+
         )
         self._control_download_group.set_title(0, 'Download data')
 
@@ -203,6 +220,9 @@ class ItsliveSearchWidget():
     # Events
 
     def _set_state(self):
+        """
+
+        """
         self.properties = {
             'start_date': self._control_dates_range.value[0],
             'end_date': self._control_dates_range.value[1],
@@ -213,7 +233,8 @@ class ItsliveSearchWidget():
             'hemisphere': self._control_projection.value,
             'max_granules_per_year': int(self._control_max_files_per_year.value),
             'selected_months': self._control_selected_months.value,
-            'orientation': self.properties['orientation']
+            'orientation': self.properties['orientation'],
+            'project_name': self.properties['project_name']
         }
 
     def _change_hemisphere(self, event):
@@ -232,7 +253,10 @@ class ItsliveSearchWidget():
     def _download_granules(self, e):
         self._control_download_button.icon = 'spinner'
         self._control_download_button.disabled = True
-        self.downloaded_files = self.download_velocity_pairs(self.filtered_urls)
+        #  def download_velocity_granules(self, urls, path_prefix=None, params=None, start=0, end=-1, threads=8):
+        self.downloaded_files = self.download_velocity_granules(self.filtered_urls,
+                                                                path_prefix=f'data/{self._control_download_project_name.value}',
+                                                                params=self.get_current_selection())
         self._control_download_button.icon = 'check'
         self._control_download_button.disabled = False
         return None
@@ -352,6 +376,59 @@ class ItsliveSearchWidget():
 
     # Public functions
 
+    @staticmethod
+    def Search(params):
+        """
+        params:
+            - params: dictionary with ITS_LIVE API parameters
+                bbox or polygon: defines the area
+                start: start time YYYY-mm-dd
+                end: end time YYYY-mm-dd
+                mission: include only a given mission(platform) i.e. LC08 (Landsat 8)
+                min_interval: minimum time separation in days between image pairs
+                max_interval: maximum separation in days between image pairs
+                percent_valid_pixels: minimum valid glacier pixel coverage in percentage (quality of product)
+                serialization: response format: json, text, html
+                compressed: zip the response, default = False
+        returns:
+            - a list of velocity pair URLs that overalp with our parameters.
+        example:
+            - params = {
+                'bbox': '10,20,30,20',
+                'start': '2001-11-30',
+                'end': '2018-01-01',
+                'percent_valid_pixels': 60
+              }
+              granules = SearchWidget.search(params)
+        """
+        if 'polygon' in params:
+            geometry_query = f"polygon={params['polygon']}&"
+        else:
+            geometry_query = f"bbox={params['bbox']}&"
+        if 'mission' in params:
+            mission_query = f"&mission={params['mission']}"
+        else:
+            mission_query = ""
+        querystring = f"""
+        {geometry_query}
+        start={params['start']}&
+        end={params['end']}&
+        percent_valid_pixels={params['percent_valid_pixels']}&
+        min_interval={params['min_separation']}&
+        max_interval={params['max_separation']}
+        {mission_query}
+        """.replace('\n', '').replace('  ', '')
+
+        query_url = f'https://nsidc.org/apps/itslive-search/velocities/urls/?{querystring}'
+        print(f'Querying: {query_url}')
+        try:
+            res =  [item['url'] for item in requests.get(query_url).json()]
+        except Exception as e:
+            print(query_url, e)
+            return None
+        return res
+
+
     def filter_urls(self, urls=None, max_files_per_year=None, months=None, by_year=True):
         """
         Helper functio to filter a list of URLS from ITS_LIVE on witch the mid-date matches the months given
@@ -403,6 +480,7 @@ class ItsliveSearchWidget():
         else:
             return self.filtered_urls
 
+
     def build_query_params(self, params=None):
         """
         returns a query string for the ITS_LIVE API that can be used on the /coverages or the /urls endpoints.
@@ -441,13 +519,19 @@ class ItsliveSearchWidget():
             {max_interval}
             """.replace('\n', '').replace('  ', '')
         else:
+            if polygon in params:
+                geometry_query = f"polygon={params['polygon']}&"
+            else:
+                geometry_query = f"bbox={params['bbox']}&"
             url = f"""
-            polygon={params['polygon']}&
+            {geometry_query}
             start={params['start']}&
             end={params['end']}&
-            percent_valid_pixels={params['min_valid_coverage']}&
+            percent_valid_pixels={params['percent_valid_pixels']}&
             min_interval={params['min_separation']}&
-            max_interval={params['max_separation']}
+            max_interval={params['max_separation']}&
+            mission={params['mission']}&
+            serialization={params['serialization']}
             """.replace('\n', '').replace('  ', '')
         return url
 
@@ -493,6 +577,9 @@ class ItsliveSearchWidget():
         """
         returns the current geometry selection as a geojson object.
         """
+        if self.properties['geometry'] is None:
+            print('No area selected, need to draw a polygon or bbox first')
+            return None
         params = {
             'geometry': self.properties['geometry'].data['geometry'],
             'min_interval': self._control_min_separation.value,
@@ -504,13 +591,13 @@ class ItsliveSearchWidget():
         return params
 
 
-    def download_file(self, url, file_paths):
+    def download_file(self, url, directory, file_paths):
         local_filename = url.split('/')[-1]
         # NOTE the stream=True parameter below
         with requests.get(url, stream=True) as r:
             r.raise_for_status()
-            if not os.path.exists(f'data/{local_filename}'):
-                with open('data/' + local_filename, 'wb') as f:
+            if not os.path.exists(f'{directory}/{local_filename}'):
+                with open(f'{directory}/{local_filename}', 'wb') as f:
                     for chunk in r.iter_content(chunk_size=8192):
                         f.write(chunk)
             file_paths.append(local_filename)
@@ -519,16 +606,33 @@ class ItsliveSearchWidget():
     def add_layer(self, props, **kwargs):
         return None
 
-    def download_velocity_pairs(self, urls, start=0, end=-1, threads=8):
+    def download_velocity_granules(self, urls, path_prefix=None, params=None, start=0, end=-1, threads=8):
         """
         downloads a list of URLS into the data directory.
+        and dumps the current parameters to help identify the files later on.
         params:
             - urls: array of ITS_LIVE urls
+            - path_prefix: directory on which the files will be downloaded.
             - start: int, start index offset.
             - end: int, end index offset
         returns:
            - array: list of the downloaded files
         """
+        if self.properties['geometry'] is None and params is None:
+            print("Files will be download but the parameters won't be included")
+            params = {'Params':'Not provided'}
+        elif params is None:
+            params = self.get_current_selection()
+
+        if path_prefix is None:
+            directory_prefix = f"data/{datetime.today().strftime('%Y-%m-%d')}-{uuid4().hex[:6]}"
+        else:
+            directory_prefix = path_prefix
+        if not os.path.exists(directory_prefix):
+            os.makedirs(directory_prefix)
+
+        with open(f'{directory_prefix}/params.json', 'w+') as outfile:
+            outfile.write(json.dumps(params))
         if urls is None:
             return None
         if start < 0:
@@ -536,7 +640,7 @@ class ItsliveSearchWidget():
         if end >= len(urls) or end == -1:
             end = len(urls)
         file_paths = []
-        arguments = [(url, file_paths) for url in urls[start:end]]
+        arguments = [(url, directory_prefix, file_paths) for url in urls[start:end]]
         result = pqdm(arguments, self.download_file, n_jobs=threads, argument_type='args')
 
         return file_paths
