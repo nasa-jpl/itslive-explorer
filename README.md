@@ -1,7 +1,7 @@
 
 # ITS_LIVE Explorer
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/betolink/itslive-explorer/main?urlpath=lab/tree/notebooks)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/nasa-jpl/itslive-explorer/main?urlpath=lab/tree/notebooks)
 
 
 ## Summary
@@ -25,20 +25,20 @@ The Binder button above allows you to explore and run the notebook in a shared c
 
 1. Install [Docker](https://docs.docker.com/install/). Use the left-hand navigation to select the appropriate install depending on operating system.
 
-2. Download the [repository from Github](https://github.com/betolink/itslive-explorer/archive/master.zip).
+2. Download the [repository from Github](https://github.com/nasa-jpl/itslive-explorer/archive/master.zip).
 
 3. Unzip the file, and open a terminal window in the `itslive-explorer` folder's location.
 
 4. From the terminal window, launch the docker container using the following command, replacing [path/notebook_folder] with your path and notebook folder name:
 
 ```bash
-docker run --name itslive -p 8888:8888 -v [path/notebook_folder]:/home/jovyan/work betolink/itslive-explorer
+docker run --name itslive -p 8888:8888 -v [path/notebook_folder]:/home/jovyan/work nsidc/itslive-explorer
 ```
 
 Example:
 
 ```bash
-docker run --name itslive -p 8888:8888 -v /Users/name/Desktop/itslive-explorer:/home/jovyan/work betolink/itslive-explorer
+docker run --name itslive -p 8888:8888 -v /Users/name/Desktop/itslive-explorer:/home/jovyan/work nsidc/itslive-explorer
 ```
 
 Or, with docker-compose:
@@ -50,7 +50,7 @@ docker-compose up
 If you want to mount a directory with write permissions, you need to grant the container the same permissions as the one on the directory to be mounted and tell it that has "root" access (within the container). This is important if you want to persist your work or download data to a local directory and not just the docker container. Run the example command below for this option:
 
 ```bash
-docker run --name itslive -e NB_UID=$(id -u) --user root -p 8888:8888 -v  /Users/name/Desktop/itslive-explorer:/home/jovyan/work betolink/itslive-explorer
+docker run --name itslive -e NB_UID=$(id -u) --user root -p 8888:8888 -v  /Users/name/Desktop/itslive-explorer:/home/jovyan/work nsidc/itslive-explorer
 ```
 
 The initialization will take some time and will require 2.6 GB of space. Once the startup is complete you will see a line of output similar to this:
@@ -74,20 +74,20 @@ If you started your container with the `-d`/`--detach` option, check `docker log
 
 1. Install [Docker](https://docs.docker.com/docker-for-windows/install/).
 
-2. Download the [repository from Github](https://github.com/betolink/itslive-explorer/archive/master.zip).
+2. Download the [repository from Github](https://github.com/nasa-jpl/itslive-explorer/archive/master.zip).
 
 3. Unzip the file, and open a terminal window (use Command Prompt or PowerShell, not PowerShell ISE) in the `itslive-explorer` folder's location.
 
 5. From the terminal window, launch the docker container using the following command, replacing [path\notebook_folder] with your path and notebook folder name:
 
 ```bash
-docker run --name itslive -p 8888:8888 -v [path\notebook_folder]:/home/jovyan/work betolink/itslive-explorer
+docker run --name itslive -p 8888:8888 -v [path\notebook_folder]:/home/jovyan/work nsidc/itslive-explorer
 ```
 
 Example:
 
 ```bash
-docker run --name itslive -p 8888:8888 -v C:\notebook_folder:/home/jovyan/work betolink/itslive-explorer
+docker run --name itslive -p 8888:8888 -v C:\notebook_folder:/home/jovyan/work nsidc/itslive-explorer
 ```
 
 Or, with docker-compose:
@@ -99,7 +99,7 @@ docker-compose up
 If you want to mount a directory with write permissions you need to grant the container the same permissions as the one on the directory to be mounted and tell it that has "root" access (within the container)
 
 ```bash
-docker run --name itslive --user root -p 8888:8888 -v C:\notebook_folder:/home/jovyan/work betolink/itslive-explorer
+docker run --name itslive --user root -p 8888:8888 -v C:\notebook_folder:/home/jovyan/work nsidc/itslive-explorer
 ```
 
 The initialization will take some time and will require 2.6 GB of space. Once the startup is complete you will see a line of output similar to this:
@@ -125,7 +125,7 @@ If you started your container with the `-d`/`--detach` option, check `docker log
 
 Install miniconda3 (Python 3.7) for your platform from [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
 
-Download the [itslive-explorer](https://github.com/betolink/itslive-explorer) repository from Github by clicking the green 'Code' button located at the top right of the repository page and clicking 'Download Zip'.
+Download the [itslive-explorer](https://github.com/nasa-jpl/itslive-explorer) repository from Github by clicking the green 'Code' button located at the top right of the repository page and clicking 'Download Zip'.
 
 Unzip the file, and open a command line or terminal window in the itslive-explorer folder's location.
 
@@ -156,7 +156,7 @@ Launch the notebook locally with the following command:
 jupyter lab
 ```
 
-This should open a browser window with the JupyterLab IDE, showing your current working directory on the left-hand navigation. Navigate to the tutorial folder of choice and click on their associated *.ipynb files to get started.
+This should open a browser window with the JupyterLab IDE, showing your current working directory on the left-hand navigation. Navigate to the notebooks folder of choice and click on their associated *.ipynb files to get started.
 
 > **NOTE:** Sometimes Conda environments change (break) even with pinned down dependencies. If you run into an issue with dependencies for the itslive-explorer please open an issue and we'll try to fix it as soon as possible.
 

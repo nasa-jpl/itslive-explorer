@@ -221,7 +221,8 @@ class map():
 
     def _set_state(self):
         """
-
+        keeps the state of the widgets after recreating them, once we get a projection
+        control in the map this will not be necessary.
         """
         self.properties = {
             'start_date': self._control_dates_range.value[0],
@@ -377,7 +378,7 @@ class map():
     # Public functions
 
     @staticmethod
-    def Search(params):
+    def Search(params: dict):
         """
         params:
             - params: dictionary with ITS_LIVE API parameters
@@ -429,7 +430,11 @@ class map():
         return res
 
 
-    def filter_urls(self, urls=None, max_files_per_year=None, months=None, by_year=True):
+    def filter_urls(self,
+                    urls: list=None,
+                    max_files_per_year: int=None,
+                    months: list=None,
+                    by_year: bool=True):
         """
         Helper functio to filter a list of URLS from ITS_LIVE on witch the mid-date matches the months given
         in the `months` parameter up to a max number of files per year. i.e. if we have a list of 12 files on 2009
@@ -569,7 +574,7 @@ class map():
                 for component in self.controls:
                     display(component)
                 fig = self._draw_counts()
-                if fis is not None:
+                if fig is not None:
                     display(fig)
             display(self._out)
 
@@ -594,13 +599,13 @@ class map():
     def download_file(self, url, directory, file_paths):
         local_filename = url.split('/')[-1]
         # NOTE the stream=True parameter below
-        with requests.get(url, stream=True) as r:
-            r.raise_for_status()
-            if not os.path.exists(f'{directory}/{local_filename}'):
+        if not os.path.exists(f'{directory}/{local_filename}'):
+            with requests.get(url, stream=True) as r:
+                r.raise_for_status()
                 with open(f'{directory}/{local_filename}', 'wb') as f:
                     for chunk in r.iter_content(chunk_size=8192):
                         f.write(chunk)
-            file_paths.append(local_filename)
+                file_paths.append(local_filename)
         return local_filename
 
     def add_layer(self, props, **kwargs):

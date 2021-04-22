@@ -3,6 +3,7 @@ import logging
 import operator
 from glob import glob
 
+import geojson
 import geopandas
 import numpy as np
 import pandas as pd
@@ -27,6 +28,14 @@ class VelocityProcessing:
         }
 
     @staticmethod
+    def coords_to_bbox(coords: list):
+        """
+        returns a bbox array for a given polygon
+        """
+        x_coordinates, y_coordinates = zip(*coords)
+        return [(min(x_coordinates), min(y_coordinates)), (max(x_coordinates), max(y_coordinates))]
+
+    @staticmethod
     def polygon_to_geojson(coords: list):
         coords = [[c[0],c[1]] for c in coords]
         return {
@@ -37,7 +46,7 @@ class VelocityProcessing:
     @staticmethod
     def load_cube(directory: str=None,
                   clip_geom: dict=None,
-                  discard_residual_projections: bool=True):
+                  include_all_projections: bool=False):
         mid_date = []
         clipped_geometries = []
         paths = sorted(glob(directory))
@@ -85,16 +94,16 @@ class VelocityProcessing:
         less_common = sorted_projections[0]
         most_common_key = most_common[0]
         less_common_key = less_common[0]
+
+        stacked_projections = {}
+        if include_all_projections is False:
+            return xr.concat(projections[most_common_key], dim='time').sortby('time')
         if len(projections_counts) > 2:
             less_common = sorted_projections[1]
             logger.warning(f'more than one projection found, merging only the 2 most common ones {most_common_key} and {less_common_key}')
-
-        stacked_projections = {}
-        if discard_residual_projections is True:
-            return xr.concat(projections[most_common_key], dim='time').sortby('time')
         for k in projections:
             stacked_projections[k] = xr.concat(projections[k], dim='time').sortby('time')
-        # Issue with merging UTM projections
+        # vx and vy may have errors as they need to be reprojected as well.
         less_common_reprojected = stacked_projections[less_common_key].rio.reproject_match(
             stacked_projections[most_common_key])
         less_common_reprojected.v.values[less_common_reprojected.v.values < 0] = np.nan
@@ -102,8 +111,8 @@ class VelocityProcessing:
         less_common_reprojected.vy.values[less_common_reprojected.vy.values < 0] = np.nan
         return xr.concat([less_common_reprojected, stacked_projections[most_common_key]], dim='time')
 
-
-    def plot_cube(self):
+    @staticmethod
+    def plot_cube(cube:str):
         return None
 
 
