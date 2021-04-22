@@ -2,7 +2,7 @@ name: itslive-explorer
 channels:
 - conda-forge
 dependencies:
-- python=3.8
+- python=3.7
 - ipyleaflet~=0.13.5
 - xarray~=0.17.0
 - rioxarray~=0.3.1

@@ -14,7 +14,7 @@ USER $NB_UID
 ADD binder/environment.yml $HOME
 ADD binder/postBuild $HOME
 RUN conda env update -f environment.yml -n base && conda clean --force --yes --all  && rm $HOME/environment.yml && \
-npm cache clean --force && \
+npm cache clean --force \
 && find /opt/conda/ -follow -type f -name '*.a' -delete \
 && find /opt/conda/ -follow -type f -name '*.pyc' -delete \
 && fix-permissions /home/$NB_USER && fix-permissions $HOME \
