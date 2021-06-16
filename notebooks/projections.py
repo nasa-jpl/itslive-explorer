@@ -1,4 +1,4 @@
-from ipyleaflet import projections, basemaps
+from ipyleaflet import projections, basemaps, TileLayer
 
 north_3413 = {
     'name': 'EPSG:3413',
@@ -46,20 +46,65 @@ projections = {
         'projection': projections.EPSG3857,
         'center': (0, 0),
         'zoom': 1,
-        'max_zoom': 8
+        'max_zoom': 8,
+        'layers': [
+            TileLayer(
+                url="http://personal-temporary-share.s3-website-us-west-1.amazonaws.com/ITS_LIVE_velOnly_itslive_4326_cog_zyx/{z}/{y}/{x}.png",
+                name="ITS_LIVE velocity mosaic",
+                tms=False,
+                tile_size=512,
+                opacity=0.6
+            )
+        ]
+
     },
     'north': {
         'base_map': basemaps.NASAGIBS.BlueMarble3413,
         'projection': north_3413,
         'center': (90, 0),
         'zoom': 1,
-        'max_zoom': 4
+        'max_zoom': 4,
+        'layers': [
+            TileLayer(
+                url="http://personal-temporary-share.s3-website-us-west-1.amazonaws.com/ITS_LIVE_velOnly_itslive_3413_cog_zyx/{z}/{y}/{x}.png",
+                name="ITS_LIVE velocity mosaic",
+                tms=False,
+                tile_size=512,
+                opacity=0.6
+            ),
+            TileLayer(
+                url="https://gibs.earthdata.nasa.gov/wmts/epsg3413/best/Coastlines/default/250m/{z}/{y}/{x}.png",
+                name="Coastlines",
+                tms=True,
+                opacity=1.0
+            )
+        ]
+
     },
     'south': {
         'base_map': basemaps.NASAGIBS.BlueMarble3031,
         'projection': south_3031,
         'center': (-90, 0),
         'zoom': 1,
-        'max_zoom': 4
+        'max_zoom': 4,
+        'layers': [
+            TileLayer(
+                url="http://personal-temporary-share.s3-website-us-west-1.amazonaws.com/ITS_LIVE_velOnly_itslive_3031_cog_zyx/{z}/{y}/{x}.png",
+                name="ITS_LIVE velocity mosaic",
+                tms=False,
+                tile_size=512,
+                opacity=0.6
+            ),
+            TileLayer(
+                url="https://gibs.earthdata.nasa.gov/wmts/epsg3031/best/Coastlines/default/250m/{z}/{y}/{x}.png",
+                name="Coastlines",
+                opacity=1.0,
+                tms=True
+            )
+        ]
+
     }
 }
+
+
+

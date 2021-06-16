@@ -217,6 +217,8 @@ class map():
                        max_zoom=projection['max_zoom'],
                        basemap=projection['base_map'],
                        crs=projection['projection'])
+        for layer in projection['layers']:
+            self.map.add_layer(layer)
     # Events
 
     def _set_state(self):
