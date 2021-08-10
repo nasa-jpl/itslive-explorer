@@ -49,11 +49,10 @@ projections = {
         'max_zoom': 8,
         'layers': [
             TileLayer(
-                url="http://personal-temporary-share.s3-website-us-west-1.amazonaws.com/ITS_LIVE_velOnly_itslive_4326_cog_zyx/{z}/{y}/{x}.png",
-                name="ITS_LIVE velocity mosaic",
-                tms=False,
-                tile_size=512,
-                opacity=0.6
+                url="https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Coastlines/default/250m/{z}/{y}/{x}.png",
+                name="Coastlines",
+                tms=True,
+                opacity=1.0
             )
         ]
 
@@ -66,10 +65,10 @@ projections = {
         'max_zoom': 4,
         'layers': [
             TileLayer(
-                url="http://personal-temporary-share.s3-website-us-west-1.amazonaws.com/ITS_LIVE_velOnly_itslive_3413_cog_zyx/{z}/{y}/{x}.png",
+                url="http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/vel_web_tiles/3413/{z}/{y}/{x}.png",
                 name="ITS_LIVE velocity mosaic",
                 tms=False,
-                tile_size=512,
+                tile_size=256,
                 opacity=0.6
             ),
             TileLayer(
@@ -89,10 +88,10 @@ projections = {
         'max_zoom': 4,
         'layers': [
             TileLayer(
-                url="http://personal-temporary-share.s3-website-us-west-1.amazonaws.com/ITS_LIVE_velOnly_itslive_3031_cog_zyx/{z}/{y}/{x}.png",
+                url="http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/vel_web_tiles/3031/{z}/{y}/{x}.png",
                 name="ITS_LIVE velocity mosaic",
                 tms=False,
-                tile_size=512,
+                tile_size=256,
                 opacity=0.6
             ),
             TileLayer(
